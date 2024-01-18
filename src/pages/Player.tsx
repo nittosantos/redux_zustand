@@ -3,16 +3,27 @@ import { Header } from "../components/Header";
 import { Video } from "../components/Video";
 import { Module } from "../components/Module";
 import { useAppSelector } from "../store";
-import { useCurrentLesson } from "../store/slices/player";
+import { start, useCurrentLesson } from "../store/slices/player";
 import { useEffect } from "react";
+import { api } from "../lib/axios";
+import { useDispatch } from "react-redux";
 
 export function Player() {
-  const modules = useAppSelector((state) => state.player.course.modules);
+  const modules = useAppSelector((state) => state.player.course?.modules);
+  const dispatch = useDispatch();
 
   const { currentLesson } = useCurrentLesson();
 
   useEffect(() => {
-    document.title = `Assistindo: ${currentLesson.title}`;
+    api.get('/courses/1').then(response => {
+      dispatch(start(response.data))
+    })
+  }, []);
+
+  useEffect(() => {
+    if (currentLesson) {
+      document.title = `Assistindo: ${currentLesson.title}`;
+    }
   }, [currentLesson]);
 
   return (
@@ -33,16 +44,17 @@ export function Player() {
             className="w-80 absolute top-0 bottom-0 divide-y-2 divide-zinc-900 right-0 border-l border-zinc-800 bg-zinc-900 overflow-y-scroll 
             scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-zinc-950"
           >
-            {modules.map((module, index) => {
-              return (
-                <Module
-                  key={module.id}
-                  moduleIndex={index}
-                  title={module.title}
-                  amountOfLessons={module.lessons.length}
-                />
-              );
-            })}
+            {modules &&
+              modules.map((module, index) => {
+                return (
+                  <Module
+                    key={module.id}
+                    moduleIndex={index}
+                    title={module.title}
+                    amountOfLessons={module.lessons.length}
+                  />
+                );
+              })}
           </aside>
         </main>
       </div>
