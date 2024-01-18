@@ -13,11 +13,12 @@ interface ModuleProps {
 
 export function Module({ title, amountOfLessons, moduleIndex }: ModuleProps) {
   const dispatch = useDispatch();
+
   const { currentLessonIndex, currentModuleIndex } = useAppSelector((state) => {
     const { currentLessonIndex, currentModuleIndex } = state.player;
-
     return { currentLessonIndex, currentModuleIndex };
   });
+
   const lessons = useAppSelector(
     (state) => state.player.course.modules[moduleIndex].lessons
   );
